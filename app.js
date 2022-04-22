@@ -3,7 +3,9 @@ import bodyParser from 'body-parser';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 import { Event } from './models/event.js';
+import { User } from './models/user.js';
 
 const app = express();
 
@@ -20,11 +22,22 @@ app.use(
         date: String!
       }
       
+      type User {
+        _id: ID!
+        email: String!
+        password: String
+      }
+      
       input eventInput {
         title: String!
         description: String!
         price: Float!
         date: String!
+      }
+      
+      input userInput {
+        email: String!
+        password: String!
       }
     
       type RootQuery {
@@ -33,6 +46,7 @@ app.use(
     
       type RootMutation {
         createEvent(eventInput: eventInput): Event
+        createUser(userInput: userInput): User
       }
     
       schema {
@@ -53,12 +67,38 @@ app.use(
           description: args.eventInput.description,
           price: +args.eventInput.price,
           date: new Date(args.eventInput.date),
+          creator: '6262afaf2c4fd484bd517c9d',
         });
         try {
+          const user = await User.findById('6262afaf2c4fd484bd517c9d');
+          if (!user) {
+            throw new Error('Not found');
+          }
+          console.log(user);
+          user.createdEvents.push(event);
+          await user.save();
           return await event.save();
         } catch (err) {
           console.log(err.message);
           throw err;
+        }
+      },
+      createUser: async (args) => {
+        const user = await User.findOne({ email: args.userInput.email });
+        if (user) {
+          throw new Error('User exists already');
+        } else {
+          const hashedPassword = await bcrypt.hash(args.userInput.password, 12);
+          const newUser = new User({
+            email: args.userInput.email,
+            password: hashedPassword,
+          });
+          try {
+            return newUser.save();
+          } catch (err) {
+            console.log(err.message);
+            throw err;
+          }
         }
       },
     },
