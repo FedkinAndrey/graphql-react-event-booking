@@ -1,6 +1,14 @@
 import { buildSchema } from 'graphql';
 
 export const graphQLSchema = buildSchema(`
+      type Booking {
+        _id: ID!
+        event: Event!
+        user: User!
+        createdAt: String!
+        updatedAt: String!
+      }
+      
       type Event {
         _id: ID!
         title: String!
@@ -31,11 +39,14 @@ export const graphQLSchema = buildSchema(`
     
       type RootQuery {
         events: [Event!]!
+        bookings: [Booking!]!
       }
     
       type RootMutation {
         createEvent(eventInput: eventInput): Event
         createUser(userInput: userInput): User
+        bookEvent(eventId: ID!): Booking!
+        cancelBooking(bookingId: ID!): Event!
       }
     
       schema {
