@@ -22,7 +22,7 @@ export const graphQLSchema = buildSchema(`
         _id: ID!
         email: String!
         password: String
-        createdEvent: [Event!]
+        createdEvents: [Event!]
       }
       
       input eventInput {
