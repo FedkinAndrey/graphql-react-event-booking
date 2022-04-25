@@ -13,19 +13,22 @@ export const eventResolvers = {
       throw new Error(e.message);
     }
   },
-  createEvent: async (args) => {
+  createEvent: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthorized');
+    }
     const event = new Event({
       title: args.eventInput.title,
       description: args.eventInput.description,
       price: +args.eventInput.price,
       date: new Date(args.eventInput.date),
-      creator: '62640a96265c375cab40cd8a',
+      creator: req.userId,
     });
     let createdEvent;
     try {
       const result = await event.save();
       createdEvent = transformEvent(result);
-      const creator = await User.findById('62640a96265c375cab40cd8a');
+      const creator = await User.findById(req.userId);
       if (!creator) {
         throw new Error('Not found');
       }
