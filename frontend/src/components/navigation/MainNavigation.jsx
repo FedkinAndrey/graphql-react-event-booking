@@ -22,9 +22,12 @@ const MainNavigation = () => (
                 <NavLink to="/events">Events</NavLink>
               </li>
               {context.token && (
-                <li>
-                  <NavLink to="/bookings">Bookings</NavLink>
-                </li>
+                <>
+                  <li>
+                    <NavLink to="/bookings">Bookings</NavLink>
+                  </li>
+                  <button onClick={context.logout}>Logout</button>
+                </>
               )}
             </ul>
           </nav>

@@ -24,9 +24,6 @@ function App() {
         <MainNavigation />
         <div className="main-content">
           <Routes>
-            {!state.token && (
-              <Route path="/" element={<Navigate replace to="/auth" />} exact />
-            )}
             {state.token && (
               <Route
                 path="/"
@@ -38,6 +35,16 @@ function App() {
               <Route
                 path="/auth"
                 element={<Navigate replace to="/events" />}
+                exact
+              />
+            )}
+            {!state.token && (
+              <Route path="/" element={<Navigate replace to="/auth" />} exact />
+            )}
+            {!state.token && (
+              <Route
+                path="/bookings"
+                element={<Navigate replace to="/auth" />}
                 exact
               />
             )}

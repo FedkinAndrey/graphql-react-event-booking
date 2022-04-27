@@ -1,7 +1,48 @@
-*{
+* {
   font-family: sans-serif;
 }
 
-.main-content{
+.main-content {
   margin: 4rem 2.5rem;
+}
+
+.form-control {
+  margin-bottom: 1rem;
+
+  label {
+    margin-bottom: .5rem;
+  }
+
+  label,
+  input {
+    width: 100%;
+    display: block;
+  }
+}
+
+@mixin btnStyle {
+  background: #5101d1;
+  font: inherit;
+  border: 1px solid #5101d1;
+  border-radius: 3px;
+  padding: 0.25rem 1rem;
+  margin-right: 1rem;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.26);
+  color: #fff;
+  cursor: pointer;
+
+  &:hover,
+  &:active {
+    border-color: #01a7a7;
+  }
+}
+
+.form-actions, {
+  button {
+    @include btnStyle;
+  }
+}
+
+.btn {
+  @include btnStyle;
 }
