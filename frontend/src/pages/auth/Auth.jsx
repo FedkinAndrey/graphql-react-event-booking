@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import './auth.scss';
-import AuthContext from '../context/auth-context';
+import AuthContext from '../../context/auth-context';
 
 const Auth = () => {
   const [email, setEmail] = useState('');

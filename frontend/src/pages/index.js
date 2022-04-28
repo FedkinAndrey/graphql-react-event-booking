@@ -1,3 +1,3 @@
-export { default as Auth } from './Auth';
-export { default as Bookings } from './Bookings';
-export { default as Events } from './Events';
+export { default as Auth } from './auth/Auth';
+export { default as Bookings } from './bookings/Bookings';
+export { default as Events } from './events/Events';

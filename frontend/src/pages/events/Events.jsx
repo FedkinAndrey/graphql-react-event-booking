@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import './events.scss';
-import { Backdrop, Modal } from '../components';
-import AuthContext from '../context/auth-context';
+import { Backdrop, Modal } from '../../components';
+import AuthContext from '../../context/auth-context';
 
 const Events = () => {
   const context = useContext(AuthContext);
@@ -83,7 +83,7 @@ const Events = () => {
   const fetchEvents = () => {
     const requestBody = {
       query: `query { 
-        events{ 
+        events { 
           _id
           title
           description
