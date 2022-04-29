@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import './events.scss';
-import { Backdrop, Modal } from '../../components';
+import { Backdrop, Modal, EventList, Spinner } from '../../components';
 import AuthContext from '../../context/auth-context';
 
 const Events = () => {
   const context = useContext(AuthContext);
   const [isCreating, setIsCreating] = useState(false);
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const titleElRef = useRef();
   const priceElRef = useRef();
   const dateElRef = useRef();
@@ -44,10 +46,6 @@ const Events = () => {
           description
           price
           date
-          creator {
-            _id
-            email
-          }
         } 
       }`,
     };
@@ -69,7 +67,20 @@ const Events = () => {
         return res.json();
       })
       .then((resData) => {
-        fetchEvents();
+        const newEvent = {
+          _id: resData.data.createEvent._id,
+          title: resData.data.createEvent.title,
+          description: resData.data.createEvent.description,
+          price: resData.data.createEvent.price,
+          date: resData.data.createEvent.date,
+          creator: {
+            _id: context.userId,
+          },
+        };
+
+        setEvents((prevState) => {
+          return [...prevState, newEvent];
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -78,9 +89,12 @@ const Events = () => {
 
   const modalCancelHandler = () => {
     setIsCreating(false);
+    setSelectedEvent(null);
   };
 
   const fetchEvents = () => {
+    setIsLoading(true);
+
     const requestBody = {
       query: `query { 
         events { 
@@ -113,15 +127,23 @@ const Events = () => {
       .then((resData) => {
         const events = resData.data.events;
         setEvents(events);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setIsLoading(false);
       });
   };
 
+  const showDetailHandler = (eventId) => {
+    setSelectedEvent(events.find((e) => e._id === eventId));
+  };
+
+  const bookEventHandler = () => {};
+
   return (
     <>
-      {isCreating && <Backdrop />}
+      {(isCreating || selectedEvent) && <Backdrop />}
       {isCreating && (
         <Modal
           title="Add Events"
@@ -129,6 +151,7 @@ const Events = () => {
           canCancel
           onCancel={modalCancelHandler}
           onConfirm={modalConfirmHandler}
+          confirmText="Confirm"
         >
           <form>
             <div className="form-control">
@@ -150,6 +173,23 @@ const Events = () => {
           </form>
         </Modal>
       )}
+      {selectedEvent && (
+        <Modal
+          title={selectedEvent.title}
+          canConfirm
+          canCancel
+          onCancel={modalCancelHandler}
+          onConfirm={bookEventHandler}
+          confirmText="Book"
+        >
+          <h1>{selectedEvent.title}</h1>
+          <h2>
+            ${selectedEvent.price} -{' '}
+            {new Date(selectedEvent.date).toLocaleDateString()}
+          </h2>
+          <p>{selectedEvent.description}</p>
+        </Modal>
+      )}
       {context.token && (
         <div className="events-control">
           <p>Share your own Events</p>
@@ -158,13 +198,15 @@ const Events = () => {
           </button>
         </div>
       )}
-      <ul className="events__list">
-        {events.map((event) => (
-          <li key={event._id} className="events__list-item">
-            {event.title}
-          </li>
-        ))}
-      </ul>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <EventList
+          events={events}
+          authUserId={context.userId}
+          onViewDetail={showDetailHandler}
+        />
+      )}
     </>
   );
 };

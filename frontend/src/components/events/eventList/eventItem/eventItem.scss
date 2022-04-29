@@ -1,0 +1,26 @@
+.event {
+  &__list-item {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid #5101d1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #5101d1;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1rem;
+      color: #7c7c7c;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+}
