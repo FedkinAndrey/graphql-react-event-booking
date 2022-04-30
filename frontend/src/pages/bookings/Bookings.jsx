@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AuthContext from '../../context/auth-context';
-import { Spinner } from '../../components';
+import { BookingList, Spinner } from '../../components';
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -10,6 +10,47 @@ const Bookings = () => {
   useEffect(() => {
     fetchBookings();
   }, []);
+
+  const deleteBookingHandler = (bookingId) => {
+    setIsLoading(true);
+
+    const requestBody = {
+      query: `mutation { 
+        cancelBooking(bookingId: "${bookingId}") { 
+          _id
+          title
+        } 
+      }`,
+    };
+
+    fetch('http://localhost:8000/graphql', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + context.token,
+      },
+    })
+      .then((res) => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error(String(res.status));
+        }
+        return res.json();
+      })
+      .then((resData) => {
+        setBookings((prevState) => {
+          // const bookingsOld = [...prevState];
+          return [...prevState].filter((booking) => {
+            return booking._id !== bookingId;
+          });
+        });
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+      });
+  };
 
   const fetchBookings = () => {
     setIsLoading(true);
@@ -43,7 +84,6 @@ const Bookings = () => {
         return res.json();
       })
       .then((resData) => {
-        // console.log(resData.data.bookings);
         setBookings(resData.data.bookings);
         setIsLoading(false);
       })
@@ -58,14 +98,7 @@ const Bookings = () => {
       {isLoading ? (
         <Spinner />
       ) : (
-        <ul>
-          {bookings.map((booking) => (
-            <li key={booking._id}>
-              {booking.event.title} -{' '}
-              {new Date(booking.createdAt).toLocaleDateString()}
-            </li>
-          ))}
-        </ul>
+        <BookingList bookings={bookings} onDelete={deleteBookingHandler} />
       )}
     </>
   );

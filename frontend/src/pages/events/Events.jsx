@@ -169,7 +169,6 @@ const Events = () => {
         return res.json();
       })
       .then((resData) => {
-        console.log(resData);
         setSelectedEvent(null);
       })
       .catch((err) => {
