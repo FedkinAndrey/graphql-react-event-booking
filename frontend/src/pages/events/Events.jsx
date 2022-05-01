@@ -39,8 +39,8 @@ const Events = () => {
     }
 
     const requestBody = {
-      query: `mutation { 
-        createEvent(eventInput: {title: "${title}", description: "${description}", price: ${price}, date: "${date}"}) { 
+      query: `mutation CreateEvent($title: String!, $desc: String!, $price: Float!, $date: String!){ 
+        createEvent(eventInput: {title: $title, description: $desc, price: $price, date: $date}) { 
           _id
           title
           description
@@ -48,6 +48,12 @@ const Events = () => {
           date
         } 
       }`,
+      variables: {
+        title: title,
+        desc: description,
+        price: price,
+        date: date,
+      },
     };
 
     const token = context.token;
@@ -145,13 +151,16 @@ const Events = () => {
       return;
     }
     const requestBody = {
-      query: `mutation { 
-        bookEvent(eventId: "${selectedEvent._id}") { 
+      query: `mutation BookEvent($id: ID!){ 
+        bookEvent(eventId: $id) { 
           _id
           createdAt
           updatedAt
         }
       }`,
+      variables: {
+        id: selectedEvent._id,
+      },
     };
 
     fetch('http://localhost:8000/graphql', {
